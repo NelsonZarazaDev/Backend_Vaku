@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Carnet de Vacunación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .table, .table th, .table td {
+            border: 1px solid #ccc;
+        }
+        .table th, .table td {
+            padding: 8px;
+            text-align: left;
+        }
+        @page {
+            size: letter landscape; /* Tamaño carta horizontal */
+            margin: 10mm; /* Margen alrededor de la página */
+        }
+
+        .table {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Vaku - Carnet de Vacunación</h1>
+
+<div class="section">
+    <h2>Datos del Paciente</h2>
+    <p><strong>Nombre:</strong> <span th:text="${paciente.nombre}">Nombre</span></p>
+    <p><strong>Documento:</strong> <span th:text="${paciente.documento}">Documento</span></p>
+    <p><strong>Fecha de nacimiento:</strong> <span th:text="${paciente.fechaNacimiento}">Fecha</span></p>
+    <p><strong>Dirección:</strong> <span th:text="${paciente.direccion}">Dirección</span></p>
+    <p><strong>Teléfono:</strong> <span th:text="${paciente.telefono}">Teléfono</span></p>
+    <p><strong>Correo:</strong> <span th:text="${paciente.correo}">Correo</span></p>
+</div>
+
+<div class="section">
+    <h2>Esquema de Vacunación</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Edad</th>
+            <th>Vacuna</th>
+            <th>Dosis</th>
+            <th>Fecha de aplicación</th>
+            <th>Laboratorio</th>
+            <th>No. Lote</th>
+            <th>Fecha próxima cita</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Aquí recorres dinámicamente la lista de vacunas -->
+        <tr th:each="vacuna : ${vacunas}">
+            <td th:text="${vacuna.edad}">Edad</td>
+            <td th:text="${vacuna.nombreVacuna}">Vacuna</td>
+            <td th:text="${vacuna.dosis}">Dosis</td>
+            <td th:text="${vacuna.fechaAplicacion}">Fecha Aplicación</td>
+            <td th:text="${vacuna.laboratorio}">Laboratorio</td>
+            <td th:text="${vacuna.numeroLote}">N° Lote</td>
+            <td th:text="${vacuna.fechaProximaCita}">Fecha Próxima Cita</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
