@@ -1,0 +1,13 @@
+.git
+.github
+.idea
+.gradle
+.gradle-local
+build
+out
+*.iml
+*.log
+README.md
+docs
+reports
+dataBase
