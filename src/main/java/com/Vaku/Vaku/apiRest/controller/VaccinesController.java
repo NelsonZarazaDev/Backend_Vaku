@@ -1,7 +1,6 @@
 package com.Vaku.Vaku.apiRest.controller;
 
 import com.Vaku.Vaku.apiRest.model.entity.VaccinesEntity;
-import com.Vaku.Vaku.apiRest.model.response.EmployeesResponse;
 import com.Vaku.Vaku.apiRest.model.response.VaccinesResponse;
 import com.Vaku.Vaku.apiRest.service.VaccinesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +23,12 @@ public class VaccinesController {
     @GetMapping(path = "{id}")
     public ResponseEntity<Set<VaccinesResponse>> getVaccines(@Valid @PathVariable Long id){
         return ResponseEntity.ok(vaccinesService.getVaccines(id));
+    }
+
+    @Operation(summary = "Bring up the vaccine schedule with applied dates by child id")
+    @GetMapping(path = "child/{childId}")
+    public ResponseEntity<List<VaccinesResponse>> getVaccinesByChild(@PathVariable Long childId){
+        return ResponseEntity.ok(vaccinesService.findVaccinesByChildId(childId));
     }
 
     @Operation(summary = "")

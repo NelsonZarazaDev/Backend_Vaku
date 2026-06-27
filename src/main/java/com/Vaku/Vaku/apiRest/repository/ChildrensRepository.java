@@ -55,10 +55,10 @@ public interface ChildrensRepository extends JpaRepository<ChildrensEntity,Long>
         va.vaap_time_application AS vaapTimeApplication,
         va.vaap_token AS vaapToken
 
-    FROM vaccines_applied va
+    FROM public.vaccines_applied va
         INNER JOIN (
             SELECT chil_id, MAX(vaap_next_appointment_date) AS last_date
-            FROM vaccines_applied
+            FROM public.vaccines_applied
             WHERE vaap_next_appointment_date IS NOT NULL
             GROUP BY chil_id
         ) latest_vaccine
@@ -95,10 +95,10 @@ public interface ChildrensRepository extends JpaRepository<ChildrensEntity,Long>
         va.vaap_time_application AS vaapTimeApplication,
         va.vaap_token AS vaapToken
 
-    FROM vaccines_applied va
+    FROM public.vaccines_applied va
         INNER JOIN (
             SELECT chil_id, MAX(vaap_next_appointment_date) AS last_date
-            FROM vaccines_applied
+            FROM public.vaccines_applied
             WHERE vaap_next_appointment_date IS NOT NULL
             GROUP BY chil_id
         ) latest_vaccine
@@ -117,10 +117,10 @@ public interface ChildrensRepository extends JpaRepository<ChildrensEntity,Long>
             SELECT COUNT(*)
             FROM (
                 SELECT va.chil_id
-                FROM vaccines_applied va
+                FROM public.vaccines_applied va
                 INNER JOIN (
                     SELECT chil_id, MAX(vaap_next_appointment_date) AS last_date
-                    FROM vaccines_applied
+                    FROM public.vaccines_applied
                     WHERE vaap_next_appointment_date IS NOT NULL
                     GROUP BY chil_id
                 ) latest_vaccine

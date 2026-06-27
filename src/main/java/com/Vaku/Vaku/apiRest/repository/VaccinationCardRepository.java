@@ -11,29 +11,22 @@ import java.util.Set;
 public interface VaccinationCardRepository extends JpaRepository<ChildrensEntity, Long> {
     @Query(value = """
             SELECT
-                vp.vaap_id AS vaap_id,
-                vp.vaap_next_appointment_date AS vaap_next_appointment_date,
-                vp.vaap_date_application AS vaap_date_application,
-                vp.empl_id AS vaap_empl_id,
-                vp.vaap_token AS vaap_token, 
+                vp.vaap_id AS vaapId,
+                vp.vaap_next_appointment_date AS vaapNextAppointmentDate,
+                vp.vaap_date_application AS vaapDateApplication,
+                vp.empl_id AS vaapEmplId,
+                vp.vaap_token AS vaapToken, 
             
-                v.vacc_id AS vVacc_id,
-                v.vacc_name AS vVacc_name,
+                v.vacc_id AS vaccId,
+                v.vacc_name AS vaccName,
             
-                pe.pers_names AS pePers_names,
-                pe.pers_last_names AS pePers_last_names
-            FROM childrens ch
-            INNER JOIN persons p ON ch.pers_id = p.pers_id
-            INNER JOIN childrens_parents cp ON ch.chil_id = cp.chil_id
-            INNER JOIN parents pa ON cp.pare_id = pa.pare_id
-            INNER JOIN persons ppa ON pa.pers_id = ppa.pers_id -- Person de Parents
-            INNER JOIN vaccines_applied vp ON vp.chil_id = ch.chil_id
+                pe.pers_names AS pePersNames,
+                pe.pers_last_names AS pePersLastNames
+            FROM public.vaccines_applied vp
             INNER JOIN vaccines v ON v.vacc_id = vp.vacc_id
-            INNER JOIN employees e ON vp.empl_id = e.empl_id
-            INNER JOIN persons pe ON e.pers_id = pe.pers_id -- Person de Employees
-            INNER JOIN citys c ON p.city_id = c.city_id
-            INNER JOIN departments d ON c.depa_id = d.depa_id
-            WHERE ch.chil_id = :childId
+            LEFT JOIN employees e ON vp.empl_id = e.empl_id
+            LEFT JOIN persons pe ON e.pers_id = pe.pers_id
+            WHERE vp.chil_id = :childId
             ORDER BY vp.vacc_id ASC
             """, nativeQuery = true)
     Set<VaccinationCardResponse> getVaccinationCard(Long childId);

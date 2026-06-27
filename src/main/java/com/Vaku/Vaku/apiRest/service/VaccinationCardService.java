@@ -7,15 +7,11 @@ import com.Vaku.Vaku.apiRest.model.response.VaccinationCardResponse;
 import com.Vaku.Vaku.apiRest.repository.ChildrensRepository;
 import com.Vaku.Vaku.apiRest.repository.PersonsRepository;
 import com.Vaku.Vaku.apiRest.repository.VaccinationCardRepository;
-import com.Vaku.Vaku.exception.AlreadyExistsException;
+import com.Vaku.Vaku.exception.NotFoundException;
 import com.Vaku.Vaku.utils.Constants;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -31,30 +27,26 @@ public class VaccinationCardService {
     private ChildrensRepository childrensRepository;
 
     public Set<VaccinationCardResponse> getVaccinationCard(String document) {
-        Optional<PersonsEntity> personsDataBd = personsRepository.findByPersDocument(document);
+        ChildrensEntity childrenDataBd = findChildByDocument(document);
+        return vaccinationCardRepository.getVaccinationCard(childrenDataBd.getChilId());
+    }
 
-        if (personsDataBd.isEmpty()) {
-            throw new AlreadyExistsException(Constants.CHILD_NOT_EXISTS.getMessage());
-        }
-
-        PersonsEntity person = personsDataBd.get();
-
-        if (!person.getPersRole().equals("Niño")) {
-            throw new AlreadyExistsException(Constants.CHILD_NOT_EXISTS.getMessage());
-        }
-
-        Optional<ChildrensEntity> childrenDataBd = childrensRepository.findByPersons_PersId(personsDataBd.get().getPersId());
-
-        if (childrenDataBd.isEmpty()) {
-            throw new AlreadyExistsException(Constants.CHILD_NOT_EXISTS.getMessage());
-        }
-        return vaccinationCardRepository.getVaccinationCard(childrenDataBd.get().getChilId());
+    public Set<VaccinationCardResponse> getVaccinationCardByChildId(Long childId) {
+        childrensRepository.findById(childId)
+                .orElseThrow(() -> new NotFoundException(Constants.CHILD_NOT_EXISTS.getMessage()));
+        return vaccinationCardRepository.getVaccinationCard(childId);
     }
 
     public Set<InfoParentsChildrensResponse> getInfoParentsChildrens(String document) {
-        Optional<PersonsEntity> personsDataBd = personsRepository.findByPersDocument(document);
-        Optional<ChildrensEntity> childrenDataBd = childrensRepository.findByPersons_PersId(personsDataBd.get().getPersId());
-        return vaccinationCardRepository.getInfoParentsChildrens(childrenDataBd.get().getChilId());
+        ChildrensEntity childrenDataBd = findChildByDocument(document);
+        return vaccinationCardRepository.getInfoParentsChildrens(childrenDataBd.getChilId());
     }
 
+    private ChildrensEntity findChildByDocument(String document) {
+        PersonsEntity personsDataBd = personsRepository.findByPersDocument(document.trim())
+                .orElseThrow(() -> new NotFoundException(Constants.CHILD_NOT_EXISTS.getMessage()));
+
+        return childrensRepository.findByPersons_PersId(personsDataBd.getPersId())
+                .orElseThrow(() -> new NotFoundException(Constants.CHILD_NOT_EXISTS.getMessage()));
+    }
 }

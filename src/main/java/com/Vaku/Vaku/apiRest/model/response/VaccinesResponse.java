@@ -4,6 +4,7 @@ package com.Vaku.Vaku.apiRest.model.response;
 import java.time.LocalDate;
 
 public interface VaccinesResponse {
+    Long getVaccId();
     String getVaccName();
     String getVaccAgeDose();
     String getVaccDosage();
@@ -11,6 +12,8 @@ public interface VaccinesResponse {
     String getInveLot();
     String getInveQuantity();
 
+    Long getVaapId();
+    Boolean getVaapApplied();
     LocalDate getVaapDateApplication();
     LocalDate getVaapNextAppointmentDate();
 }

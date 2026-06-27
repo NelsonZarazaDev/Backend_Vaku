@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity(name = "vaccines_applied")
+@Table(name = "vaccines_applied", schema = "public")
 @Getter
 @Setter
 @Builder

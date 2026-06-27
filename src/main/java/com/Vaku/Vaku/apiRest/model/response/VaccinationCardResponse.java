@@ -5,26 +5,26 @@ import java.time.LocalDate;
 
 public interface VaccinationCardResponse {
 
-    Long getvaap_id();
+    Long getVaapId();
 
-    LocalDate getvaap_next_appointment_date();
+    LocalDate getVaapNextAppointmentDate();
 
-    LocalDate getvaap_date_application();
+    LocalDate getVaapDateApplication();
 
-    String getvaap_token();
+    String getVaapToken();
 
-    Long getvaap_empl_id();
-
-
-
-    Long getvVacc_id();
-
-    String getvVacc_name();
+    Long getVaapEmplId();
 
 
 
-    String getpePers_names();
+    Long getVaccId();
 
-    String getpePers_last_names();
+    String getVaccName();
+
+
+
+    String getPePersNames();
+
+    String getPePersLastNames();
 
 }

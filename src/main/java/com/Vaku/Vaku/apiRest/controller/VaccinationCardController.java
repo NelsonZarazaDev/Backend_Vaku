@@ -26,6 +26,12 @@ public class VaccinationCardController {
         return ResponseEntity.ok(vaccinationCardService.getVaccinationCard(document));
     }
 
+    @Operation(summary = "Bring up the vaccine information by child id")
+    @GetMapping(path = "child/{childId}")
+    public ResponseEntity<Set<VaccinationCardResponse>> getVaccinationCardByChildId(@PathVariable Long childId){
+        return ResponseEntity.ok(vaccinationCardService.getVaccinationCardByChildId(childId));
+    }
+
     @Operation(summary = "Bring up the vaccine information by id")
     @GetMapping(path = "info/{document}")
     public ResponseEntity<Set<InfoParentsChildrensResponse>> getInfoParentsChildrens(@PathVariable String document){
