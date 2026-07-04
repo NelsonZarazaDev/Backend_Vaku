@@ -3,6 +3,7 @@ package com.Vaku.Vaku.apiRest.controller;
 import com.Vaku.Vaku.apiRest.model.entity.ChildrensEntity;
 import com.Vaku.Vaku.apiRest.model.entity.PersonsEntity;
 import com.Vaku.Vaku.apiRest.model.response.ChildrensResponse;
+import com.Vaku.Vaku.apiRest.model.response.InfoParentsChildrensResponse;
 import com.Vaku.Vaku.apiRest.service.ChildrensService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -18,6 +19,12 @@ public class ChildrensController {
 
     @Autowired
     private ChildrensService childrensService;
+
+    @Operation(summary = "Get all children or search children by document")
+    @GetMapping
+    public ResponseEntity<Set<InfoParentsChildrensResponse>> get(@RequestParam(required = false) String document) {
+        return ResponseEntity.ok(childrensService.getChildren(document));
+    }
 
     @Operation(summary = "Update the child's personal information per token")
     @PutMapping(path = "{token}")

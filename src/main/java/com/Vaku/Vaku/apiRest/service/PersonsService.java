@@ -46,14 +46,26 @@ public class PersonsService {
 
         for (PersonsEntity personRequest : personsRequest) {
             sanitizePerson(personRequest);
-            validateRoleSupported(personRequest.getPersRole());
-            validateRequiredFieldsByRole(personRequest);
-            validateFieldFormats(personRequest);
+            validateDocumentFormat(personRequest.getPersDocument());
 
-            if (personsRepository.findByPersDocument(personRequest.getPersDocument()).isPresent()) {
+            var existingPerson = personsRepository.findByPersDocument(personRequest.getPersDocument());
+            if (existingPerson.isPresent()) {
+                PersonsEntity person = existingPerson.get();
+                String existingRole = normalizeRole(person.getPersRole());
+
+                if (isParentRole(existingRole)) {
+                    ParentsEntity parent = childrensParentsService.createParent(person.getPersId());
+                    parentId = parent.getPareId();
+                    savedPersonsList.add(person);
+                    continue;
+                }
+
                 throw new AlreadyExistsException(Constants.DOCUMENT_ALREADY_EXISTS.getMessage());
             }
 
+            validateRoleSupported(personRequest.getPersRole());
+            validateRequiredFieldsByRole(personRequest);
+            validateFieldFormats(personRequest);
             validateUniqueFieldsInDatabase(personRequest);
 
             PersonsEntity person = saveNewPerson(personRequest);
@@ -175,9 +187,7 @@ public class PersonsService {
     }
 
     private void validateFieldFormats(PersonsEntity person) {
-        if (person.getPersDocument() == null || !DOCUMENT_PATTERN.matcher(person.getPersDocument()).matches()) {
-            throw new IllegalArgumentException(Constants.INVALID_DOCUMENT_FORMAT.getMessage());
-        }
+        validateDocumentFormat(person.getPersDocument());
 
         if (person.getPersEmail() != null && !EMAIL_PATTERN.matcher(person.getPersEmail()).matches()) {
             throw new IllegalArgumentException(Constants.INVALID_EMAIL_FORMAT.getMessage());
@@ -185,6 +195,12 @@ public class PersonsService {
 
         if (person.getPersPhone() != null && !PHONE_PATTERN.matcher(person.getPersPhone()).matches()) {
             throw new IllegalArgumentException(Constants.INVALID_PHONE_FORMAT.getMessage());
+        }
+    }
+
+    private void validateDocumentFormat(String document) {
+        if (document == null || !DOCUMENT_PATTERN.matcher(document).matches()) {
+            throw new IllegalArgumentException(Constants.INVALID_DOCUMENT_FORMAT.getMessage());
         }
     }
 

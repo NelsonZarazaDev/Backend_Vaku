@@ -29,3 +29,4 @@ public class VakuApplication {
         System.out.println(passwordEncoder.encode("123456"));
     }
 }
+

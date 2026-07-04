@@ -28,6 +28,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class AuditLogsService {
+    public static final String ACTOR_IDENTIFIER_ATTR = "AUDIT_ACTOR_IDENTIFIER";
+
     private final AuditLogsRepository auditLogsRepository;
     private final PersonsRepository personsRepository;
 
@@ -95,6 +97,14 @@ public class AuditLogsService {
     }
 
     private String getCurrentIdentifier() {
+        var requestAttributes = org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+        if (requestAttributes instanceof org.springframework.web.context.request.ServletRequestAttributes servletRequestAttributes) {
+            Object auditIdentifier = servletRequestAttributes.getRequest().getAttribute(ACTOR_IDENTIFIER_ATTR);
+            if (auditIdentifier != null && !auditIdentifier.toString().isBlank()) {
+                return auditIdentifier.toString();
+            }
+        }
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             return "ANONIMO";
