@@ -96,14 +96,14 @@ public class PersonsService {
     }
 
     private List<PersonsEntity> createParentChildRegistration(List<PersonsEntity> personsRequest) {
-        PersonsEntity parentRequest = personsRequest.stream()
-                .filter(person -> isParentRole(normalizeRole(person.getPersRole())))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Debe enviar los datos del acudiente"));
         PersonsEntity childRequest = personsRequest.stream()
                 .filter(person -> isChildRole(normalizeRole(person.getPersRole())))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Debe enviar los datos del nino"));
+        PersonsEntity parentRequest = personsRequest.stream()
+                .filter(person -> person != childRequest)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Debe enviar los datos del acudiente"));
 
         sanitizePerson(parentRequest);
         sanitizePerson(childRequest);
@@ -136,11 +136,9 @@ public class PersonsService {
     }
 
     private boolean isParentChildRegistration(List<PersonsEntity> personsRequest) {
-        boolean hasParent = personsRequest.stream()
-                .anyMatch(person -> isParentRole(normalizeRole(person.getPersRole())));
         boolean hasChild = personsRequest.stream()
                 .anyMatch(person -> isChildRole(normalizeRole(person.getPersRole())));
-        return hasParent && hasChild;
+        return hasChild && personsRequest.size() >= 2;
     }
 
     public PersonsEntity updatePersons(PersonsEntity personsRequest, Long id) {
