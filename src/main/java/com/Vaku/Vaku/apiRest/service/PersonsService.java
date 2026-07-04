@@ -117,12 +117,6 @@ public class PersonsService {
         }
 
         PersonsEntity parent = personsRepository.findByPersDocument(parentRequest.getPersDocument())
-                .map(existingParent -> {
-                    if (!isParentRole(normalizeRole(existingParent.getPersRole()))) {
-                        throw new AlreadyExistsException(Constants.DOCUMENT_ALREADY_EXISTS.getMessage());
-                    }
-                    return existingParent;
-                })
                 .orElseGet(() -> {
                     validateRoleSupported(parentRequest.getPersRole());
                     validateRequiredFieldsByRole(parentRequest);
