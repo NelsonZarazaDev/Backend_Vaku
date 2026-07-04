@@ -38,6 +38,10 @@ public class PersonsService {
             throw new IllegalArgumentException("Debe enviar al menos una persona para registrar");
         }
 
+        if (isParentChildRegistration(personsRequest)) {
+            return createParentChildRegistration(personsRequest);
+        }
+
         validateDuplicateFieldsInRequest(personsRequest);
 
         List<PersonsEntity> savedPersonsList = new ArrayList<>();
@@ -89,6 +93,60 @@ public class PersonsService {
         }
 
         return savedPersonsList;
+    }
+
+    private List<PersonsEntity> createParentChildRegistration(List<PersonsEntity> personsRequest) {
+        PersonsEntity parentRequest = personsRequest.stream()
+                .filter(person -> isParentRole(normalizeRole(person.getPersRole())))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Debe enviar los datos del acudiente"));
+        PersonsEntity childRequest = personsRequest.stream()
+                .filter(person -> isChildRole(normalizeRole(person.getPersRole())))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Debe enviar los datos del nino"));
+
+        sanitizePerson(parentRequest);
+        sanitizePerson(childRequest);
+        validateDocumentFormat(parentRequest.getPersDocument());
+        validateRoleSupported(childRequest.getPersRole());
+        validateRequiredFieldsByRole(childRequest);
+        validateFieldFormats(childRequest);
+
+        if (personsRepository.findByPersDocument(childRequest.getPersDocument()).isPresent()) {
+            throw new AlreadyExistsException(Constants.DOCUMENT_ALREADY_EXISTS.getMessage());
+        }
+
+        PersonsEntity parent = personsRepository.findByPersDocument(parentRequest.getPersDocument())
+                .map(existingParent -> {
+                    if (!isParentRole(normalizeRole(existingParent.getPersRole()))) {
+                        throw new AlreadyExistsException(Constants.DOCUMENT_ALREADY_EXISTS.getMessage());
+                    }
+                    return existingParent;
+                })
+                .orElseGet(() -> {
+                    validateRoleSupported(parentRequest.getPersRole());
+                    validateRequiredFieldsByRole(parentRequest);
+                    validateFieldFormats(parentRequest);
+                    validateUniqueFieldsInDatabase(parentRequest);
+                    return saveNewPerson(parentRequest);
+                });
+
+        ChildrensEntity child = childrensParentsService.createChildren(saveNewPerson(childRequest).getPersId());
+        ParentsEntity parentEntity = childrensParentsService.createParent(parent.getPersId());
+        childrensParentsService.createChildrenParentChildren(child.getChilId(), parentEntity.getPareId());
+
+        List<PersonsEntity> savedPersonsList = new ArrayList<>();
+        savedPersonsList.add(parent);
+        savedPersonsList.add(child.getPersons());
+        return savedPersonsList;
+    }
+
+    private boolean isParentChildRegistration(List<PersonsEntity> personsRequest) {
+        boolean hasParent = personsRequest.stream()
+                .anyMatch(person -> isParentRole(normalizeRole(person.getPersRole())));
+        boolean hasChild = personsRequest.stream()
+                .anyMatch(person -> isChildRole(normalizeRole(person.getPersRole())));
+        return hasParent && hasChild;
     }
 
     public PersonsEntity updatePersons(PersonsEntity personsRequest, Long id) {
