@@ -2,84 +2,275 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Carnet de Vacunación</title>
+    <title>Carnet de Vacunacion</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1, h2 {
-            text-align: center;
-        }
-        .section {
-            margin-bottom: 20px;
-        }
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .table, .table th, .table td {
-            border: 1px solid #ccc;
-        }
-        .table th, .table td {
-            padding: 8px;
-            text-align: left;
-        }
         @page {
-            size: letter landscape; /* Tamaño carta horizontal */
-            margin: 10mm; /* Margen alrededor de la página */
+            size: letter landscape;
+            margin: 9mm;
         }
 
-        .table {
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: #183b3b;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10px;
+            line-height: 1.35;
+            background: #ffffff;
+        }
+
+        .page {
             width: 100%;
+        }
+
+        .header {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            background: #0f766e;
+            color: #ffffff;
+        }
+
+        .header td {
+            padding: 12px 14px;
+            vertical-align: middle;
+        }
+
+        .brand {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+        .title {
+            margin-top: 2px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .meta {
+            text-align: right;
+            font-size: 9px;
+        }
+
+        .summary {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 8px 0;
+            margin: 0 -8px 12px -8px;
+        }
+
+        .panel {
+            width: 50%;
+            vertical-align: top;
+            border: 1px solid #c9e3df;
+            background: #f7fbfa;
+            padding: 10px;
+        }
+
+        .panel-title {
+            margin: 0 0 8px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #c9e3df;
+            color: #0f766e;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table td {
+            padding: 3px 0;
+            vertical-align: top;
+        }
+
+        .label {
+            width: 32%;
+            color: #5f7774;
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .value {
+            color: #183b3b;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .section-title {
+            margin: 8px 0 6px 0;
+            padding: 7px 10px;
+            background: #e7f3f1;
+            border-left: 5px solid #0f766e;
+            color: #0f4f4a;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .vaccines {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .vaccines thead {
+            display: table-header-group;
+        }
+
+        .vaccines tr {
+            page-break-inside: avoid;
+        }
+
+        .vaccines th {
+            padding: 7px 5px;
+            border: 1px solid #0f766e;
+            background: #0f766e;
+            color: #ffffff;
+            font-size: 8px;
+            font-weight: 700;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        .vaccines td {
+            padding: 6px 5px;
+            border: 1px solid #d7e7e4;
+            color: #183b3b;
+            font-size: 9px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+
+        .vaccines tbody tr:nth-child(even) td {
+            background: #f8fcfb;
+        }
+
+        .age-col { width: 12%; }
+        .vaccine-col { width: 25%; }
+        .dose-col { width: 13%; }
+        .date-col { width: 13%; }
+        .lab-col { width: 15%; }
+        .lot-col { width: 10%; }
+        .next-col { width: 12%; }
+
+        .empty {
+            color: #7b8f8c;
+            font-style: italic;
+        }
+
+        .footer {
+            margin-top: 10px;
+            padding-top: 6px;
+            border-top: 1px solid #c9e3df;
+            color: #5f7774;
+            font-size: 8px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
+<div class="page">
+    <table class="header">
+        <tr>
+            <td>
+                <div class="brand">vaku</div>
+                <div class="title">Carnet de vacunacion</div>
+            </td>
+            <td class="meta">
+                Documento del paciente<br />
+                <strong th:text="${paciente.documento}">000000</strong>
+            </td>
+        </tr>
+    </table>
 
-<h1>Vaku - Carnet de Vacunación</h1>
+    <table class="summary">
+        <tr>
+            <td class="panel">
+                <div class="panel-title">Paciente</div>
+                <table class="info-table">
+                    <tr>
+                        <td class="label">Nombre</td>
+                        <td class="value" th:text="${paciente.nombre}">Nombre paciente</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Documento</td>
+                        <td class="value" th:text="${paciente.documento}">Documento</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Nacimiento</td>
+                        <td class="value" th:text="${paciente.fechaNacimiento}">Fecha</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Direccion</td>
+                        <td class="value" th:text="${paciente.direccion}">Direccion</td>
+                    </tr>
+                </table>
+            </td>
 
-<div class="section">
-    <h2>Datos del Paciente</h2>
-    <p><strong>Nombre:</strong> <span th:text="${paciente.nombre}">Nombre</span></p>
-    <p><strong>Documento:</strong> <span th:text="${paciente.documento}">Documento</span></p>
-    <p><strong>Fecha de nacimiento:</strong> <span th:text="${paciente.fechaNacimiento}">Fecha</span></p>
-    <p><strong>Dirección:</strong> <span th:text="${paciente.direccion}">Dirección</span></p>
-    <p><strong>Teléfono:</strong> <span th:text="${paciente.telefono}">Teléfono</span></p>
-    <p><strong>Correo:</strong> <span th:text="${paciente.correo}">Correo</span></p>
-</div>
+            <td class="panel">
+                <div class="panel-title">Acudiente</div>
+                <table class="info-table">
+                    <tr>
+                        <td class="label">Nombre</td>
+                        <td class="value" th:text="${paciente.nombrePadre}">Nombre acudiente</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Telefono</td>
+                        <td class="value" th:text="${paciente.telefono}">Telefono</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Correo</td>
+                        <td class="value" th:text="${paciente.correo}">Correo</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Entidad</td>
+                        <td class="value">Vaku</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
-<div class="section">
-    <h2>Esquema de Vacunación</h2>
-    <table class="table">
+    <div class="section-title">Esquema de vacunacion</div>
+
+    <table class="vaccines">
         <thead>
         <tr>
-            <th>Edad</th>
-            <th>Vacuna</th>
-            <th>Dosis</th>
-            <th>Fecha de aplicación</th>
-            <th>Laboratorio</th>
-            <th>No. Lote</th>
-            <th>Fecha próxima cita</th>
+            <th class="age-col">Edad</th>
+            <th class="vaccine-col">Vacuna</th>
+            <th class="dose-col">Dosis</th>
+            <th class="date-col">Aplicacion</th>
+            <th class="lab-col">Laboratorio</th>
+            <th class="lot-col">Lote</th>
+            <th class="next-col">Proxima cita</th>
         </tr>
         </thead>
         <tbody>
-        <!-- Aquí recorres dinámicamente la lista de vacunas -->
         <tr th:each="vacuna : ${vacunas}">
             <td th:text="${vacuna.edad}">Edad</td>
             <td th:text="${vacuna.nombreVacuna}">Vacuna</td>
             <td th:text="${vacuna.dosis}">Dosis</td>
-            <td th:text="${vacuna.fechaAplicacion}">Fecha Aplicación</td>
-            <td th:text="${vacuna.laboratorio}">Laboratorio</td>
-            <td th:text="${vacuna.numeroLote}">N° Lote</td>
-            <td th:text="${vacuna.fechaProximaCita}">Fecha Próxima Cita</td>
+            <td th:classappend="${vacuna.fechaAplicacion == '-'} ? ' empty' : ''" th:text="${vacuna.fechaAplicacion}">Fecha</td>
+            <td th:classappend="${vacuna.laboratorio == null || vacuna.laboratorio == ''} ? ' empty' : ''" th:text="${vacuna.laboratorio != null && vacuna.laboratorio != '' ? vacuna.laboratorio : '-'}">Laboratorio</td>
+            <td th:classappend="${vacuna.numeroLote == null || vacuna.numeroLote == ''} ? ' empty' : ''" th:text="${vacuna.numeroLote != null && vacuna.numeroLote != '' ? vacuna.numeroLote : '-'}">Lote</td>
+            <td th:classappend="${vacuna.fechaProximaCita == '-'} ? ' empty' : ''" th:text="${vacuna.fechaProximaCita}">Proxima</td>
         </tr>
         </tbody>
     </table>
-</div>
 
+    <div class="footer">
+        Este documento resume la informacion registrada en Vaku. Verifique fechas, lote y laboratorio con el personal de salud.
+    </div>
+</div>
 </body>
 </html>
